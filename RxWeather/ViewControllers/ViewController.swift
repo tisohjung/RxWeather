@@ -18,16 +18,19 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        tfCityName.rx.value
-            .subscribe(onNext: { cityName in
-                if let cityName = cityName {
-                    if cityName.isEmpty {
+        self.tfCityName.rx.controlEvent(UIControl.Event.editingDidEndOnExit)
+            .asObservable()
+            .map({ self.tfCityName.text })
+            .subscribe(onNext: { city in
+                if let city = city {
+                    if city.isEmpty {
                         self.displayWeather(nil)
                     } else {
-                        self.fetchWeather(by: cityName)
+                        self.fetchWeather(by: city)
                     }
                 }
             }).disposed(by: disposeBag)
+
     }
 
     private func displayWeather(_ weather: Weather?) {
