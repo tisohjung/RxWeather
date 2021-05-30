@@ -51,15 +51,14 @@ class ViewController: UIViewController {
 
         let resouce = Resource<WeatherResult>(url: url)
 
-        URLRequest.load(resource: resouce)
-            .observe(on: MainScheduler.instance) // DispatchQueue.main
+        let search = URLRequest.load(resource: resouce)
+            .observe(on: MainScheduler.instance)
             .catchAndReturn(WeatherResult.empty)
-            .subscribe(onNext: { result in
-
-                print(result)
-
-                let weather = result.main
-                self.displayWeather(weather)
-            }).disposed(by: disposeBag)
+        search.map({ "\($0.main.celsius) ℃" })
+            .bind(to: self.lbTemperature.rx.text)
+            .disposed(by: disposeBag)
+        search.map({ "\($0.main.humidity) 💧" })
+            .bind(to: self.lbHumidity.rx.text)
+            .disposed(by: disposeBag)
     }
 }
