@@ -53,6 +53,10 @@ class ViewController: UIViewController {
 
         let search = URLRequest.load(resource: resouce)
             .observe(on: MainScheduler.instance)
+            .catch({ error in
+                print(error.localizedDescription)
+                return Observable.just(WeatherResult.empty)
+            })
             .asDriver(onErrorJustReturn: WeatherResult.empty)
 
         search.map({ "\($0.main.celsius) ℃" })
