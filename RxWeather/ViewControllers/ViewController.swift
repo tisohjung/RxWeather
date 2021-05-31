@@ -53,12 +53,13 @@ class ViewController: UIViewController {
 
         let search = URLRequest.load(resource: resouce)
             .observe(on: MainScheduler.instance)
-            .catchAndReturn(WeatherResult.empty)
+            .asDriver(onErrorJustReturn: WeatherResult.empty)
+
         search.map({ "\($0.main.celsius) ℃" })
-            .bind(to: self.lbTemperature.rx.text)
+            .drive(self.lbTemperature.rx.text)
             .disposed(by: disposeBag)
         search.map({ "\($0.main.humidity) 💧" })
-            .bind(to: self.lbHumidity.rx.text)
+            .drive(self.lbHumidity.rx.text)
             .disposed(by: disposeBag)
     }
 }
